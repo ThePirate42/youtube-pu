@@ -4,6 +4,7 @@
 
 :: Settings loading
 
+if NOT exist %~dp0youtube-pu.conf echo youtube-pu.conf not found! & goto :end
 setlocal EnableDelayedExpansion
 for /F "tokens=*" %%g in (%~dp0youtube-pu.conf) do (%%g)
 endlocal & set "_buildpath=%_buildpath%" & set "_default_youtube-dl_path=%_default_youtube-dl_path%" & set "_enable_cmdow=%_enable_cmdow%" & set "_update_pyinstaller=%_update_pyinstaller%" & set "_pull_patches=%_pull_patches%"
