@@ -4,27 +4,29 @@
 
 :: Settings loading
 
-for /F "tokens=*" %%g in (youtube-pu.conf) do (%%g)
+setlocal EnableDelayedExpansion
+for /F "tokens=*" %%g in (%~dp0youtube-pu.conf) do (%%g)
+endlocal & set "_buildpath=%_buildpath%" & set "_default_youtube-dl_path=%_default_youtube-dl_path%" & set "_enable_cmdow=%_enable_cmdow%" & set "_update_pyinstaller=%_update_pyinstaller%" & set "_pull_patches=%_pull_patches%"
 
 :: Dependency check
 
 for /F "tokens=*" %%g in ('where jq 2^> nul') do (set _jqpath=%%g)
-if ""=="%_jqpath%" echo jq not found! & goto :eof
+if ""=="%_jqpath%" echo jq not found! & goto :end
 for /F "tokens=*" %%g in ('where curl 2^> nul') do (set _curlpath=%%g)
-if ""=="%_curlpath%" echo curl not found! & goto :eof
+if ""=="%_curlpath%" echo curl not found! & goto :end
 for /F "tokens=*" %%g in ('where git 2^> nul') do (set _gitpath=%%g)
-if ""=="%_gitpath%" echo git not found! & goto :eof
+if ""=="%_gitpath%" echo git not found! & goto :end
 for /F "tokens=*" %%g in ('where py 2^> nul') do (set _pypath=%%g)
-if ""=="%_pypath%" echo py not found! & goto :eof
+if ""=="%_pypath%" echo py not found! & goto :end
 for /F "tokens=*" %%g in ('py -c "import os, sys; print(os.path.dirname(sys.executable))"') do (set _pyinstallerpath=%%g\Scripts\pyinstaller.exe)
-if NOT [true]==[%_update_pyinstaller%] (if ""=="%_pyinstallerpath%" echo pyinstaller not found! & goto :eof)
+if NOT "true"=="%_update_pyinstaller%" (if ""=="%_pyinstallerpath%" echo pyinstaller not found! & goto :end)
 for /F "tokens=*" %%g in ('where cmdow 2^> nul') do (set _cmdowpath=%%g)
-if [true]==[%_enable_cmdow%] (if ""=="%_cmdowpath%" echo cmdow not found! & goto :eof)
-if exist "%_buildpath%" echo The build folder already exists! & goto :eof
+if "true"=="%_enable_cmdow%" (if ""=="%_cmdowpath%" echo cmdow not found! & goto :end)
+if exist "%_buildpath%" echo The build folder already exists! & goto :end
 
 :: "cmdow @ /MAX" maximizes the window, you can disabe it from the configuration
 
-if [true]==[%_enable_cmdow%] cmdow @ /MAX
+if "true"=="%_enable_cmdow%" cmdow @ /MAX
 
 :: I know, the following code contains too much goto, sorry!
 
@@ -51,21 +53,21 @@ md "%_buildpath%"
 echo [7mDownloading...[0m
 set _sourcefoldername=youtube-dl_%_currentversion%
 git clone -b %_currentversion% https://github.com/ytdl-org/youtube-dl.git "%_buildpath%\%_sourcefoldername%"
+if NOT ""=="%_pull_patches%" (
 echo [7mPatching...[0m
-if NOT []==[%_pull_patches%] (
 pushd "%_buildpath%\%_sourcefoldername%"
-for %%g in ("%_pull_patches:,=" "%") do (
+for %%g in ("%_pull_patches:_=" "%") do (
 git pull origin pull/%%~g/head
 )
 popd
 )
 echo [7mCompiling...[0m
-if [true]==[%_update_pyinstaller%] py -m pip install --upgrade pyinstaller > nul
-"%_pyinstallerpath%" "%_buildpath%\%_sourcefoldername%\youtube_dl\__main__.py" --log-level ERROR --onefile --name youtube-dl --specpath "%_buildpath%" --distpath "%_buildpath%\dist" --workpath "%_buildpath%\build"
+if "true"=="%_update_pyinstaller%" py -m pip install --upgrade pyinstaller > nul
+"%_pyinstallerpath%" "%_buildpath%\%_sourcefoldername%\youtube_dl\__main__.py" --log-level WARN --onefile --name youtube-dl --specpath "%_buildpath%" --distpath "%_buildpath%\dist" --workpath "%_buildpath%\build"
 echo [0m
 echo [7mChecking executable...[0m
 for /F "tokens=*" %%g in ('"%_buildpath%\dist\youtube-dl.exe" --version') do (set _newversion=%%g)
-if NOT [%_currentversion%] == [%_newversion%] goto:problem
+if NOT "%_currentversion%" == "%_newversion%" goto:problem
 echo [7mFinal operations...[0m
 move /Y "%_buildpath%\dist\youtube-dl.exe" "%_localpath%" > nul
 rd /S /Q "%_buildpath%"
