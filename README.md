@@ -8,6 +8,7 @@ Batch script to download, patch, build and update youtube-dl from source
 - [python](https://www.python.org/downloads/)
 	- Use your preferred version; not all versions are necessarily compatible with youtube-dl, python 3.9 should be fine. Make sure you install the py launcher.
 - [pyinstaller](https://www.pyinstaller.org/)
+	- pyinstaller.exe must be in the default *Python\Scripts\\* folder ("Python" is the python installation folder). If you don't know what this is about, you are probably fine.
 #### Optional:
 - [cmdow](https://ritchielawrence.github.io/cmdow/)
 	- Used to maximize the window, you can disable it in the configuration.
