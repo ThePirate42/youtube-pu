@@ -52,11 +52,13 @@ echo [7mDownloading...[0m
 set _sourcefoldername=youtube-dl_%_currentversion%
 git clone -b %_currentversion% https://github.com/ytdl-org/youtube-dl.git "%_buildpath%\%_sourcefoldername%"
 echo [7mPatching...[0m
+if NOT []==[%_pull_patches%] (
 pushd "%_buildpath%\%_sourcefoldername%"
 for %%g in ("%_pull_patches:,=" "%") do (
 git pull origin pull/%%~g/head
 )
 popd
+)
 echo [7mCompiling...[0m
 if [true]==[%_update_pyinstaller%] py -m pip install --upgrade pyinstaller > nul
 "%_pyinstallerpath%" "%_buildpath%\%_sourcefoldername%\youtube_dl\__main__.py" --log-level ERROR --onefile --name youtube-dl --specpath "%_buildpath%" --distpath "%_buildpath%\dist" --workpath "%_buildpath%\build"
