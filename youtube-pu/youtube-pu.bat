@@ -35,20 +35,20 @@ echo [7mChecking for updates...[0m
 for /F "tokens=*" %%g in ('where youtube-dl 2^> nul') do (set _localpath=%%g)
 if ""=="%_localpath%" set _localpath=%_default_youtube-dl_path%
 for /F "tokens=*" %%h in ('curl -sS -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/ytdl-org/youtube-dl/releases/latest ^| jq -r .tag_name') do (set _currentversion=%%h)
-if NOT exist "%_localpath%" goto:install
+if NOT exist "%_localpath%" goto :install
 for /F "tokens=*" %%g in ('"%_localpath%" --version') do (set _localversion=%%g)
-if NOT %_currentversion% == %_localversion% (goto:update) ELSE (goto:noupdate)
+if NOT %_currentversion% == %_localversion% (goto :update) ELSE (goto :noupdate)
 :install
 set _installmode=0
 choice /M "It seems that youtube-dl isn't present in the system. Do you want to install version (%_currentversion%) in (%_localpath%)"
 if %ERRORLEVEL% EQU 2 goto :end
-goto:build
+goto :build
 :update
 set _installmode=1
 echo A new version is available! (%_localversion% --^> %_currentversion%)
 choice /M "Do you want to update"
 if %ERRORLEVEL% EQU 2 goto :end
-goto:build
+goto :build
 :build
 md "%_buildpath%"
 echo [7mDownloading...[0m
@@ -68,21 +68,21 @@ if "true"=="%_update_pyinstaller%" py -m pip install --upgrade pyinstaller > nul
 echo [0m
 echo [7mChecking executable...[0m
 for /F "tokens=*" %%g in ('"%_buildpath%\dist\youtube-dl.exe" --version') do (set _newversion=%%g)
-if NOT "%_currentversion%" == "%_newversion%" goto:problem
+if NOT "%_currentversion%" == "%_newversion%" goto :problem
 echo [7mFinal operations...[0m
 move /Y "%_buildpath%\dist\youtube-dl.exe" "%_localpath%" > nul
 rd /S /Q "%_buildpath%"
 if %_installmode% == 1 (echo Update completed!) else (echo Installation completed!)
-goto:end
+goto :end
 :problem
 echo [41;97mSomething has gone wrong :-([0m
 echo Press enter to erase temporary files
 pause
 rd /S /Q "%_buildpath%"
-goto:end
+goto :end
 :noupdate
 set _installmode=2
 echo youtube-dl is up-to-date! (%_currentversion%)
-goto:end
+goto :end
 :end
 pause
