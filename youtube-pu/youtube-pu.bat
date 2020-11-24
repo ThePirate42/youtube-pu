@@ -20,9 +20,9 @@ if ""=="%_gitpath%" echo git not found! & goto :end
 for /F "tokens=*" %%g in ('where py 2^> nul') do (set _pypath=%%g)
 if ""=="%_pypath%" echo py not found! & goto :end
 for /F "tokens=*" %%g in ('py -c "import os, sys; print(os.path.dirname(sys.executable))"') do (set _pyinstallerpath=%%g\Scripts\pyinstaller.exe)
-if NOT "true"=="%_update_pyinstaller%" (if ""=="%_pyinstallerpath%" echo pyinstaller not found! & goto :end)
+if NOT "true"=="%_update_pyinstaller%" (if ""=="%_pyinstallerpath%" echo pyinstaller not found! & goto :end )
 for /F "tokens=*" %%g in ('where cmdow 2^> nul') do (set _cmdowpath=%%g)
-if "true"=="%_enable_cmdow%" (if ""=="%_cmdowpath%" echo cmdow not found! & goto :end)
+if "true"=="%_enable_cmdow%" (if ""=="%_cmdowpath%" echo cmdow not found! & goto :end )
 if exist "%_buildpath%" echo The build folder already exists! & goto :end
 
 :: "cmdow @ /MAX" maximizes the window, you can disabe it from the configuration
@@ -37,7 +37,7 @@ if ""=="%_localpath%" set _localpath=%_default_youtube-dl_path%
 for /F "tokens=*" %%h in ('curl -sS -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/ytdl-org/youtube-dl/releases/latest ^| jq -r .tag_name') do (set _currentversion=%%h)
 if NOT exist "%_localpath%" goto :install
 for /F "tokens=*" %%g in ('"%_localpath%" --version') do (set _localversion=%%g)
-if NOT %_currentversion% == %_localversion% (goto :update) ELSE (goto :noupdate)
+if NOT %_currentversion% == %_localversion% (goto :update ) ELSE (goto :noupdate )
 :install
 set _installmode=0
 choice /M "It seems that youtube-dl isn't present in the system. Do you want to install version (%_currentversion%) in (%_localpath%)"
