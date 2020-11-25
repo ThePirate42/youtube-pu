@@ -13,7 +13,7 @@ Batch script to download, patch with github pull requests, compile and update yo
 - [cmdow](https://ritchielawrence.github.io/cmdow/)
 	- Used to maximize the window, you can disable it in the configuration.
 ## Installation
-Simply download the zipball from the latest release and extract the script and the configuration file somewhere. If the destination folder is contained in PATH you will be able to call youtube-pu as a command everywhere. **Make sure to edit the configuration file before using the script.**
+Simply download the zip file from the latest release and extract the script and the configuration file somewhere. If the destination folder is contained in PATH you will be able to call youtube-pu as a command everywhere. **Make sure to edit the configuration file before using the script.**
 ## Usage
 Simply write `youtube-pu` on the command line. The behavior of the command will be similar to `youtube-dl -U`, with the difference that the updated executable will be patched with the pull requests selected in the configuration file and compiled with the chosen python version.
 
