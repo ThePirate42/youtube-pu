@@ -9,7 +9,7 @@ set _version=git
 if NOT exist %~dp0youtube-pu.conf echo youtube-pu.conf not found! & goto :end
 setlocal EnableDelayedExpansion
 for /F "tokens=*" %%g in (%~dp0youtube-pu.conf) do (%%g)
-endlocal & set "_buildpath=%_buildpath%" & set "_default_youtube-dl_path=%_default_youtube-dl_path%" & set "_enable_cmdow=%_enable_cmdow%" & set "_update_pyinstaller=%_update_pyinstaller%" & set "_pull_patches=%_pull_patches%" & set "_python_version=%_python_version%"
+endlocal & set "_buildpath=%_buildpath%" & set "_default_youtube-dl_path=%_default_youtube-dl_path%" & set "_enable_cmdow=%_enable_cmdow%" & set "_update_pyinstaller=%_update_pyinstaller%" & set "_pull_patches=%_pull_patches%" & set "_python_version=%_python_version%" & set "_check_youtube-pu_version=%_check_youtube-pu_version%"
 
 :: Dependency check
 
@@ -41,7 +41,7 @@ if "true"=="%_enable_cmdow%" cmdow @ /MAX
 :: Check for youtube-pu updates
 
 for /F "tokens=*" %%h in ('curl -sS -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/thepirate42/youtube-pu/releases/latest ^| jq -r .tag_name') do (set _currentscriptversion=%%h)
-if NOT %_version%==git (if NOT %_version%==%_currentscriptversion% echo A new youtube-pu version [%_currentscriptversion%] is available!)
+if "true"=="%_check_youtube-pu_version%" (if NOT %_version%==git (if NOT %_version%==%_currentscriptversion% echo A new youtube-pu version [%_currentscriptversion%] is available!))
 
 :: I know, the following code contains too much goto, sorry!
 
