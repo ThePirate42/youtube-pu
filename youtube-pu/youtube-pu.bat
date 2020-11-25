@@ -21,11 +21,13 @@ for /F "tokens=*" %%g in ('where git 2^> nul') do (set _gitpath=%%g)
 if ""=="%_gitpath%" echo git not found! & goto :end
 for /F "tokens=*" %%g in ('where py 2^> nul') do (set _pypath=%%g)
 if ""=="%_pypath%" echo py not found! & goto :end
+setlocal EnableDelayedExpansion
 if NOT ""=="%_python_version%" (
 set "_pyver= -%_python_version%"
-for /F "tokens=*" %%g in ('py%_pyver% -c "print(""test"")" 2^> nul') do (set _python_test=%%g)
-if NOT "test"=="%_python_test%" echo Python v%_python_version% not found! & goto :end
+for /F "tokens=*" %%g in ('py!_pyver! -c "print(""test"")" 2^> nul') do (set _python_test=%%g)
+if NOT "test"=="!_python_test!" echo Python v%_python_version% not found^^! & goto :end
 )
+endlocal & set "_pyver=%_pyver%"
 for /F "tokens=*" %%g in ('py%_pyver% -c "import os, sys; print(os.path.dirname(sys.executable))"') do (set _pyinstallerpath=%%g\Scripts\pyinstaller.exe)
 if NOT "true"=="%_update_pyinstaller%" (if NOT exist "%_pyinstallerpath%" echo pyinstaller not found! & goto :end )
 for /F "tokens=*" %%g in ('where cmdow 2^> nul') do (set _cmdowpath=%%g)
