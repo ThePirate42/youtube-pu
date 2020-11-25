@@ -6,7 +6,7 @@ Batch script to download, patch with github pull requests, compile and update yo
 	- You already have it if you use Windows 10 version 1803 or newer.
 - [git](https://git-scm.com/downloads)
 - [python](https://www.python.org/downloads/)
-	- The most recent available version will be used; not all versions are necessarily compatible with youtube-dl, I use python 3.9. Make sure you install the py launcher.
+	- If you have installed more than one version you can choose the one you desire in the configuration; not all versions are necessarily compatible with youtube-dl, I use python 3.9. Make sure you install the py launcher.
 - [pyinstaller](https://www.pyinstaller.org/)
 	- pyinstaller.exe must be in the default *Python\Scripts\\* folder ("Python" is the python installation folder). If you don't know what this is about, you are probably fine.
 #### Optional:
