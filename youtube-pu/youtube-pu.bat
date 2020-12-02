@@ -6,6 +6,8 @@ set _version=git
 
 :: Settings loading
 
+echo Loading...
+
 if NOT exist %~dp0youtube-pu.conf echo youtube-pu.conf not found! & goto :end
 setlocal EnableDelayedExpansion
 for /F "tokens=*" %%g in (%~dp0youtube-pu.conf) do (%%g)
@@ -33,6 +35,8 @@ if NOT "true"=="%_update_pyinstaller%" (if NOT exist "%_pyinstallerpath%" echo p
 for /F "tokens=*" %%g in ('where cmdow 2^> nul') do (set _cmdowpath=%%g)
 if "true"=="%_enable_cmdow%" (if ""=="%_cmdowpath%" echo cmdow not found! & goto :end )
 if exist "%_buildpath%" echo The build folder already exists! & goto :end
+
+<nul set /p ="A[2K"
 
 :: "cmdow @ /MAX" maximizes the window, you can disabe it from the configuration
 
