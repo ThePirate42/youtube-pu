@@ -82,8 +82,9 @@ popd
 )
 echo [7mCompiling...[0m
 if "true"=="%_update_pyinstaller%" py%_pyver% -m pip install --upgrade pyinstaller > nul
+<nul set /p ="[0m"
 "%_pyinstallerpath%" "%_buildpath%\%_sourcefoldername%\youtube_dl\__main__.py" --log-level WARN --onefile --name youtube-dl --specpath "%_buildpath%" --distpath "%_buildpath%\dist" --workpath "%_buildpath%\build"
-echo [0m
+<nul set /p ="[0m"
 echo [7mChecking executable...[0m
 for /F "tokens=*" %%g in ('"%_buildpath%\dist\youtube-dl.exe" --version') do (set _newversion=%%g)
 if NOT "%_currentversion%" == "%_newversion%" goto :problem
