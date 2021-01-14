@@ -1,4 +1,5 @@
 @echo off
+setlocal
 :: Youtube-pu
 :: By ThePirate42, 2020
 :: Source: https://github.com/ThePirate42/youtube-pu
@@ -44,7 +45,7 @@ if "true"=="%_enable_cmdow%" cmdow @ /MAX
 
 :: Check for youtube-pu updates
 
-for /F "tokens=*" %%h in ('curl -sS -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/thepirate42/youtube-pu/releases/latest ^| jq -r .tag_name') do (set _currentscriptversion=%%h)
+for /F "tokens=*" %%g in ('curl -sS -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/thepirate42/youtube-pu/releases/latest ^| jq -r .tag_name') do (set _currentscriptversion=%%g)
 if "true"=="%_check_youtube-pu_version%" (if NOT %_version%==git (if NOT %_version%==%_currentscriptversion% echo A new youtube-pu version [%_currentscriptversion%] is available!))
 
 :: I know, the following code contains too much goto, sorry!
@@ -52,7 +53,7 @@ if "true"=="%_check_youtube-pu_version%" (if NOT %_version%==git (if NOT %_versi
 echo [7mChecking for updates...[0m
 for /F "tokens=*" %%g in ('where youtube-dl 2^> nul') do (set _localpath=%%g)
 if ""=="%_localpath%" set _localpath=%_default_youtube-dl_path%
-for /F "tokens=*" %%h in ('curl -sS -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/ytdl-org/youtube-dl/releases/latest ^| jq -r .tag_name') do (set _currentversion=%%h)
+for /F "tokens=*" %%g in ('curl -sS -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/ytdl-org/youtube-dl/releases/latest ^| jq -r .tag_name') do (set _currentversion=%%g)
 if NOT exist "%_localpath%" goto :install
 for /F "tokens=*" %%g in ('"%_localpath%" --version') do (set _localversion=%%g)
 if NOT %_currentversion% == %_localversion% (goto :update ) ELSE (goto :noupdate )
@@ -75,13 +76,23 @@ git clone -b %_currentversion% https://github.com/ytdl-org/youtube-dl.git "%_bui
 if NOT ""=="%_pull_patches%" (
 echo [7mPatching...[0m
 pushd "%_buildpath%\%_sourcefoldername%"
+setlocal EnableDelayedExpansion
+echo:
 for %%g in ("%_pull_patches:_=" "%") do (
+set _mergemsg=merged
+for /F "tokens=*" %%h in ('curl -sS -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/ytdl-org/youtube-dl/pulls/%%~g/merge ^| jq -r .message') do (set _mergemsg=%%h)
+if "Not Found"=="!_mergemsg!" (
 git pull origin pull/%%~g/head
+) else (
+echo [33mWARNING: %%~g is already merged in the master branch, skipping.[0m
 )
+echo:
+)
+endlocal
 popd
 )
 echo [7mCompiling...[0m
-if "true"=="%_update_pyinstaller%" py%_pyver% -m pip install --upgrade pyinstaller > nul
+if "true"=="%_update_pyinstaller%" py%_pyver% -m pip -q install --upgrade pyinstaller
 <nul set /p ="[0m"
 "%_pyinstallerpath%" "%_buildpath%\%_sourcefoldername%\youtube_dl\__main__.py" --log-level WARN --onefile --name youtube-dl --specpath "%_buildpath%" --distpath "%_buildpath%\dist" --workpath "%_buildpath%\build"
 <nul set /p ="[0m"
@@ -105,3 +116,4 @@ echo youtube-dl is up-to-date! (%_currentversion%)
 goto :end
 :end
 pause
+endlocal
