@@ -37,16 +37,16 @@ if exist "%_buildpath%" echo The build folder already exists^^! & goto :end
 
 if "true"=="%_enable_cmdow%" cmdow @ /MAX
 
-:: Removes "Loading..." text
-
-<nul set /p ="A[2K"
-
 :: Check for youtube-pu updates
 
 for /F "tokens=*" %%g in ('curl -sS -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/thepirate42/youtube-pu/releases/latest ^| jq -r .tag_name') do (set _currentscriptversion=%%g)
+
+<nul set /p ="A[2K"
+
 if "true"=="%_check_youtube-pu_version%" (if NOT %_version%==git (if NOT %_version%==%_currentscriptversion% echo A new youtube-pu version [%_currentscriptversion%] is available^^!))
 
 :: I know, the following code contains too much goto, sorry!
+:: Check for youtube-dl updates
 
 echo [7mChecking for updates...[0m
 for /F "tokens=*" %%g in ('where youtube-dl 2^> nul') do (set _localpath=%%g)
@@ -68,9 +68,15 @@ if %ERRORLEVEL% EQU 2 goto :end
 goto :build
 :build
 md "%_buildpath%"
+
+:: Cloning of the tag correspondent to the last release
+
 echo [7mDownloading...[0m
 set _sourcefoldername=youtube-dl_%_currentversion%
 git clone -b %_currentversion% https://github.com/ytdl-org/youtube-dl.git "%_buildpath%\%_sourcefoldername%"
+
+:: Merging of requested pull requests
+
 if NOT ""=="%_pull_patches%" (
 echo [7mPatching...[0m
 pushd "%_buildpath%\%_sourcefoldername%"
@@ -87,11 +93,17 @@ echo:
 )
 popd
 )
+
+:: Executable creation
+
 echo [7mCompiling...[0m
 if "true"=="%_update_pyinstaller%" py%_pyver% -m pip -q install --upgrade pyinstaller
 <nul set /p ="[0m"
 "%_pyinstallerpath%" "%_buildpath%\%_sourcefoldername%\youtube_dl\__main__.py" --log-level WARN --onefile --name youtube-dl --specpath "%_buildpath%" --distpath "%_buildpath%\dist" --workpath "%_buildpath%\build"
 <nul set /p ="[0m"
+
+:: Final checks and operations. If the executable doesn't work, an error message is displayed and the script pauses before erasing the build folder.
+
 echo [7mChecking executable...[0m
 for /F "tokens=*" %%g in ('"%_buildpath%\dist\youtube-dl.exe" --version') do (set _newversion=%%g)
 if NOT "%_currentversion%" == "%_newversion%" goto :problem
