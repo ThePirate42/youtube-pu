@@ -9,8 +9,8 @@ set _version=git
 
 echo Loading...
 
-if NOT exist %~dp0youtube-pu.conf echo youtube-pu.conf not found^^! & goto :end
-for /F "tokens=*" %%g in (%~dp0youtube-pu.conf) do (%%g)
+if NOT exist "%~dp0youtube-pu.conf" echo youtube-pu.conf not found^^! & goto :end
+for /F "tokens=* eol=#" %%g in (%~dp0youtube-pu.conf) do (call set %%g)
 
 :: Dependency check
 
